@@ -62,11 +62,11 @@ const handleSubmit = async (e) => {
 
     const userData = userRes.data.user;
 
-    console.log("✅ User token:", token);
+    // console.log("✅ User token:", token);
     console.log("✅ User ID:", userData._id);
-    console.log("✅ User name:", userData.name);
-    console.log("✅ User email:", userData.email);
-    console.log("✅ User role:", userData.role);
+    // console.log("✅ User name:", userData.name);
+    // console.log("✅ User email:", userData.email);
+    // console.log("✅ User role:", userData.role);
 
     setSuccess("Login successful!");
 

@@ -13,6 +13,7 @@ import Signup from "./pages/Signup";
 import Dashboard from "./pages/Dashboard";
 // import DashboardForm from "./components/DashboardForm";
 import Forget from "./pages/Forget";
+import Forgett from "./pages/Forgett";
 // import Loginn from "./pages/Loginn";
 
 function App() {
@@ -40,6 +41,7 @@ function App() {
           <Route path="/signup" element={<Signup />} />
           <Route path="/dashboard" element={<Dashboard/>}/>
           <Route path="/forget" element={<Forget/>}/>
+          <Route path="/forgett" element={<Forgett/>}/>
           {/* <Route path="/addUser" element={<DashboardForm/>}/> */}
         </Routes>
       </Router>

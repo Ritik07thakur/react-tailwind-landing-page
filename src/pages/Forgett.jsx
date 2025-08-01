@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-export default function Forget() {
+export default function Forgett() {
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [email, setEmail] = useState("");
@@ -15,78 +15,52 @@ export default function Forget() {
   const isValidEmail = (email) =>
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
 
-  const handleNext = async () => {
-  setError("");
+  const handleNext = () => {
+    setError("");
 
-  if (step === 1) {
-    if (!email.trim()) return setError("Email is required.");
-    if (!isValidEmail(email)) return setError("Please enter a valid email.");
-
-    try {
-      const res = await fetch("http://localhost:5000/api/auth/send-otp", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email }),
-      });
-
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Failed to send OTP");
-
+    if (step === 1) {
+      if (!email.trim()) {
+        setError("Email is required.");
+        return;
+      }
+      if (!isValidEmail(email)) {
+        setError("Please enter a valid email.");
+        return;
+      }
       setStep(2);
-    } catch (err) {
-      setError(err.message);
-    }
-  } else if (step === 2) {
-    if (!otp.trim()) return setError("OTP is required.");
-    if (!/^\d{6}$/.test(otp.trim()))
-      return setError("OTP must be a 6-digit number.");
-
-    try {
-      const res = await fetch("http://localhost:5000/api/auth/verify-otp", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, otp }),
-      });
-
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Invalid OTP");
-
+      // Send OTP to email here
+    } else if (step === 2) {
+      if (!otp.trim()) {
+        setError("OTP is required.");
+        return;
+      }
+      if (!/^\d{6}$/.test(otp.trim())) {
+        setError("OTP must be a 6-digit number.");
+        return;
+      }
       setStep(3);
-    } catch (err) {
-      setError(err.message);
-    }
-  } else if (step === 3) {
-    const { newPassword, confirmPassword } = passwords;
+      // Optionally verify OTP here
+    } else if (step === 3) {
+      const { newPassword, confirmPassword } = passwords;
 
-    if (!newPassword || !confirmPassword)
-      return setError("All password fields are required.");
-    if (newPassword.length < 6)
-      return setError("Password must be at least 6 characters.");
-    if (newPassword !== confirmPassword)
-      return setError("Passwords do not match.");
+      if (!newPassword || !confirmPassword) {
+        setError("All password fields are required.");
+        return;
+      }
+      if (newPassword.length < 6) {
+        setError("Password must be at least 6 characters.");
+        return;
+      }
+      if (newPassword !== confirmPassword) {
+        setError("Passwords do not match.");
+        return;
+      }
 
-    try {
-      const res = await fetch("http://localhost:5000/api/auth/reset-password", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, newPassword }),
-      });
-
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Failed to reset password");
+      // Call API to change password here
+      console.log("Reset password for:", email);
       navigate("/login");
-    } catch (err) {
-      setError(err.message);
     }
-  }
-};
-
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900">
