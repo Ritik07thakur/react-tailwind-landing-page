@@ -11,7 +11,8 @@ import {
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Dashboard from "./pages/Dashboard";
-import DashboardForm from "./components/DashboardForm";
+// import DashboardForm from "./components/DashboardForm";
+import Forget from "./pages/Forget";
 // import Loginn from "./pages/Loginn";
 
 function App() {
@@ -38,6 +39,7 @@ function App() {
           {/* <Route path="/loginn" element={<Loginn />} /> */}
           <Route path="/signup" element={<Signup />} />
           <Route path="/dashboard" element={<Dashboard/>}/>
+          <Route path="/forget" element={<Forget/>}/>
           {/* <Route path="/addUser" element={<DashboardForm/>}/> */}
         </Routes>
       </Router>
