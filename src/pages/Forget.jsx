@@ -17,6 +17,7 @@ export default function Forget() {
 
   const handleNext = async () => {
   setError("");
+  
 
   if (step === 1) {
     if (!email.trim()) return setError("Email is required.");
