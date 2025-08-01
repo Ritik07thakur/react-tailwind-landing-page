@@ -46,20 +46,19 @@ const Pricing = () => {
   return (
     <div className="mx-auto mt-24 max-w-7xl px-4 sm:mt-32 sm:px-6 lg:mt-40 lg:px-8">
       <div className="mx-auto flex max-w-4xl flex-col space-y-7 text-center">
-        <h3 className="text-lg font-medium uppercase tracking-wide text-neutral-800 dark:text-neutral-200">
-          Tagline
-        </h3>
+  <h3 className="text-lg font-medium uppercase tracking-wide text-neutral-800 dark:text-neutral-200">
+    Built for Innovators
+  </h3>
 
-        <h2 className="text-4xl font-bold leading-tight tracking-wide text-neutral-900 dark:text-neutral-50 xl:text-5xl">
-          Short heading goes in here
-        </h2>
+  <h2 className="text-4xl font-bold leading-tight tracking-wide text-neutral-900 dark:text-neutral-50 xl:text-5xl">
+    Unlock the Power of AI with AI Portal
+  </h2>
 
-        <p className="text-lg text-neutral-600 dark:text-neutral-400">
-          Rhoncus morbi et augue nec, in id ullamcorper at sit. Condimentum sit
-          nunc in eros scelerisque sed. Commodo in viverra nunc, ullamcorper ut.
-          Non, amet, aliquet scelerisque nullam sagittis, pulvinar.
-        </p>
-      </div>
+  <p className="text-lg text-neutral-600 dark:text-neutral-400">
+    AI Portal helps developers and teams build, deploy, and manage intelligent solutions with ease.
+    Access powerful tools, integrate models, and scale your AI workflows — all from one unified platform.
+  </p>
+</div>
 
       <div className="isolate mx-auto mt-14 grid max-w-md grid-cols-1 gap-8 lg:mx-0 lg:mt-24 lg:max-w-none lg:grid-cols-3">
         {tiers.map((tier) => (

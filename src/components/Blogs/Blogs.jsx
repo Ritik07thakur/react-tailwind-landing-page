@@ -1,75 +1,77 @@
 import React from 'react';
 
 const posts = [
+ 
   {
     id: 1,
-    category: 'Category',
-    title: 'Blog title heading will go here',
+    category: 'AI Integration',
+    title: 'How AI Is Transforming Business Operations',
     description:
-      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros elementum tristique.',
+      'Explore how AI Portal empowers enterprises to automate workflows, optimize decisions, and improve customer experiences through intelligent systems.',
     href: '#',
-    imgSrc: 'https://dummyimage.com/1280x800/d4d4d4/171717',
-    alt: 'Image',
+    imgSrc: 'https://s44783.pcdn.co/wp-content/uploads/2023/10/2-1024x536.png',
+    alt: 'AI team collaboration dashboard',
     metadata: {
-      author: 'Full Name',
+      author: 'Anvi Thakur',
       authorImg: 'https://dummyimage.com/100x100/d4d4d4/171717',
-      datetime: '2023-05-01',
-      date: 'May 1, 2023',
+      datetime: '2024-10-15',
+      date: 'Oct 15, 2024',
     },
   },
   {
     id: 2,
-    category: 'Category',
-    title: 'Blog title heading will go here',
+    category: 'Machine Learning',
+    title: 'Scaling AI Models with Confidence',
     description:
-      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros elementum tristique.',
+      'Learn how AI Portal helps developers deploy and monitor ML models at scale — without infrastructure headaches.',
     href: '#',
-    imgSrc: 'https://dummyimage.com/1280x800/d4d4d4/171717',
-    alt: 'Image',
+    imgSrc: 'https://imageio.forbes.com/specials-images/imageserve/6736f3d0b4198928f9696fc0/0x0.jpg?format=jpg&height=900&width=1600&fit=bounds',
+    alt: 'Developer using AI dashboard',
     metadata: {
-      author: 'Full Name',
+      author: 'Amit Sinha',
       authorImg: 'https://dummyimage.com/100x100/d4d4d4/171717',
-      datetime: '2023-05-01',
-      date: 'May 1, 2023',
+      datetime: '2024-11-02',
+      date: 'Nov 2, 2024',
     },
   },
   {
     id: 3,
-    category: 'Category',
-    title: 'Blog title heading will go here',
+    category: 'Automation',
+    title: 'The Future of No-Code AI Solutions',
     description:
-      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros elementum tristique.',
+      'Discover how AI Portal is democratizing access to artificial intelligence with its intuitive no-code automation tools.',
     href: '#',
-    imgSrc: 'https://dummyimage.com/1280x800/d4d4d4/171717',
-    alt: 'Image',
+    imgSrc: 'https://www.shutterstock.com/image-photo/ai-technology-artificial-intelligence-man-600nw-2263545623.jpg',
+    alt: 'AI technology visual concept',
     metadata: {
-      author: 'Full Name',
+      author: 'Neha Verma',
       authorImg: 'https://dummyimage.com/100x100/d4d4d4/171717',
-      datetime: '2023-05-01',
-      date: 'May 1, 2023',
+      datetime: '2024-12-10',
+      date: 'Dec 10, 2024',
     },
   },
 ];
+
 
 const Blogs = () => {
   return (
     <div className="mx-auto mt-24 max-w-7xl px-4 sm:mt-32 sm:px-6 lg:mt-40 lg:px-8">
       <div className="block items-end justify-between lg:flex">
-        <div className="flex max-w-4xl flex-col space-y-7">
-          <h3 className="text-lg font-medium uppercase tracking-wide text-neutral-900 dark:text-neutral-300">
-            Blog
-          </h3>
+       <div className="flex max-w-4xl flex-col space-y-7">
+  <h3 className="text-lg font-medium uppercase tracking-wide text-neutral-900 dark:text-neutral-300">
+    Blog
+  </h3>
 
-          <h2 className="text-4xl font-semibold leading-tight tracking-wide text-neutral-900 dark:text-neutral-50 xl:text-5xl">
-            Short heading goes here
-          </h2>
+  <h2 className="text-4xl font-semibold leading-tight tracking-wide text-neutral-900 dark:text-neutral-50 xl:text-5xl">
+    Insights & Updates from AI Portal
+  </h2>
 
-          <p className="max-w-xl text-lg text-neutral-600 dark:text-neutral-400">
-            Rhoncus morbi et augue nec, in id ullamcorper at sit. Condimentum
-            sit nunc in eros scelerisque sed. Commodo in viverra nunc,
-            ullamcorper ut.
-          </p>
-        </div>
+  <p className="max-w-xl text-lg text-neutral-600 dark:text-neutral-400">
+    Stay up to date with the latest trends in AI, product updates, best practices, and in-depth guides from our team. 
+    Learn how AI Portal is helping innovators build smarter solutions every day.
+  </p>
+</div>
+
 
         <div className="mt-6 flex justify-center">
           <a
