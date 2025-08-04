@@ -2,6 +2,7 @@ import axios from "axios";
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import GoogleAuth from "../components/GoogleAuth";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -179,7 +180,7 @@ const handleSubmit = async (e) => {
 
           {/* Social Auth Buttons */}
           <div className="space-y-3 pt-2">
-            <button
+            {/* <button
               type="button"
               className="flex w-full items-center justify-center gap-2 rounded-md border border-neutral-300 bg-white px-4 py-2 text-sm font-medium text-neutral-700 hover:bg-neutral-100 dark:border-slate-600 dark:bg-slate-700 dark:text-white dark:hover:bg-slate-600"
             >
@@ -189,7 +190,8 @@ const handleSubmit = async (e) => {
                 className="h-5 w-5"
               />
               Continue with Google
-            </button>
+            </button> */}
+            <GoogleAuth/>
 
             <button
               type="button"

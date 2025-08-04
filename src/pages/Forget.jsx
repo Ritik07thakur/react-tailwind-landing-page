@@ -17,7 +17,7 @@ export default function Forget() {
 
   const handleNext = async () => {
   setError("");
-  
+
 
   if (step === 1) {
     if (!email.trim()) return setError("Email is required.");
@@ -119,6 +119,7 @@ export default function Forget() {
         {step === 3 && (
           <>
             <input
+            
               type="password"
               value={passwords.newPassword}
               onChange={(e) =>
