@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 // import { FcGoogle } from "react-icons/fc";
-import { FaLinkedin } from "react-icons/fa";
+// import { FaLinkedin } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import GoogleAuth from "../components/GoogleAuth";
+import LinkedInAuth from "../components/LinkedInAuth";
 
 const Signup = () => {
   const [formData, setFormData] = useState({
@@ -238,14 +239,15 @@ const Signup = () => {
         <div className="mt-6 space-y-3">
           <GoogleAuth />
 
-          <button
+          {/* <button
             type="button"
             disabled
             className="flex items-center justify-center gap-2 w-full rounded-md border border-neutral-400 bg-white px-4 py-2 text-sm font-medium text-neutral-700 hover:bg-neutral-100 dark:bg-slate-700 dark:text-white dark:hover:bg-slate-600"
           >
             <FaLinkedin size={18} className="text-blue-700 dark:text-white" />
             Continue with LinkedIn (Coming Soon)
-          </button>
+          </button> */}
+          <LinkedInAuth />
         </div>
 
         {/* </form> */}

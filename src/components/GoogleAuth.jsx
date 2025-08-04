@@ -14,7 +14,9 @@ export default function GoogleAuth() {
       console.log("✅ Google scripts loaded successfully");
     } else {
       console.log("❌ Google scripts not loaded");
-    }
+      // console.log(window.google)
+
+    }  
   }, []);
 
   const handleSuccess = async (credentialResponse) => {
@@ -73,22 +75,27 @@ export default function GoogleAuth() {
   };
 
   return (
-    <div className="flex flex-col  mt-6 space-y-4">
-      <GoogleLogin
-        onSuccess={handleSuccess}
-        onError={handleError}
-        size="large"
-        theme="outline"
-        text="signin_with"
-      />
+   <div className="flex flex-col justify-center w-full max-w-xs mx-auto">
+  <GoogleLogin
+    onSuccess={handleSuccess}
+    onError={handleError}
+    size="large"
+    theme="outline"
+    text="signin_with"
+  />
 
-      {successMessage && (
-        <p className="text-green-600 font-medium text-sm">{successMessage}</p>
-      )}
+  {successMessage && (
+    <p className="text-sm font-medium text-green-600 text-center">
+      {successMessage}
+    </p>
+  )}
 
-      {errorMessage && (
-        <p className="text-red-600 font-medium text-sm">{errorMessage}</p>
-      )}
-    </div>
+  {errorMessage && (
+    <p className="text-sm font-medium text-red-600 text-center">
+      {errorMessage}
+    </p>
+  )}
+</div>
+
   );
 }
