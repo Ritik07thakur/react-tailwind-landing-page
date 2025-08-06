@@ -75,23 +75,28 @@ export default function GoogleAuth() {
   };
 
   return (
-   <div className="flex flex-col justify-center w-full max-w-xs mx-auto">
-  <GoogleLogin
-    onSuccess={handleSuccess}
-    onError={handleError}
-    size="large"
-    theme="outline"
-    text="signin_with"
-  />
+  <div  className="flex flex-col items-center bg-white justify-center  rounded  space-y-4 py-2 px-4">
+  <div className="w-full max-w-sm px-4 sm:px-6 md:px-10 lg:px-16">
+    <GoogleLogin
+      onSuccess={handleSuccess}
+      onError={handleError}
+      size="medium"
+      theme="outline"
+      text="signin_with"
+      width="100%"
+    />
+  </div>
+
+
 
   {successMessage && (
-    <p className="text-sm font-medium text-green-600 text-center">
+    <p className="text-green-600 font-medium text-sm text-center">
       {successMessage}
     </p>
   )}
 
   {errorMessage && (
-    <p className="text-sm font-medium text-red-600 text-center">
+    <p className="text-red-600 font-medium text-sm text-center">
       {errorMessage}
     </p>
   )}

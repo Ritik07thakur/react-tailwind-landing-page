@@ -3,7 +3,8 @@ import React, { useState } from "react";
 // import { FaLinkedin } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import GoogleAuth from "../components/GoogleAuth";
-import LinkedInAuth from "../components/LinkedInAuth";
+// import LinkedInAuth from "../components/LinkedInAuth";
+import FacebookAuth from "../components/FacebookAuth";
 
 const Signup = () => {
   const [formData, setFormData] = useState({
@@ -247,7 +248,8 @@ const Signup = () => {
             <FaLinkedin size={18} className="text-blue-700 dark:text-white" />
             Continue with LinkedIn (Coming Soon)
           </button> */}
-          <LinkedInAuth />
+          {/* <LinkedInAuth /> */}
+          <FacebookAuth/>
         </div>
 
         {/* </form> */}

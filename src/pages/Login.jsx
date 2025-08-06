@@ -3,7 +3,8 @@ import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import GoogleAuth from "../components/GoogleAuth";
-import LinkedInAuth from "../components/LinkedInAuth";
+// import LinkedInAuth from "../components/LinkedInAuth";
+import FacebookAuth from "../components/FacebookAuth";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -64,20 +65,15 @@ const handleSubmit = async (e) => {
 
     const userData = userRes.data.user;
 
-    // console.log("✅ User token:", token);
-    console.log("✅ User ID:", userData._id);
-    // console.log("✅ User name:", userData.name);
-    // console.log("✅ User email:", userData.email);
-    // console.log("✅ User role:", userData.role);
 
-    setSuccess("Login successful!");
+    setSuccess("Login successful!" + userData);
 
     setTimeout(() => navigate("/dashboard"), 1000);
   } catch (err) {
     if (err.response?.data?.message) {
       setGeneralError(err.response.data.message);
     } else {
-      setGeneralError("Something went wrong. Please try again later.");
+      setGeneralError("invalid Email or password.");
     }
     console.error("Login error:", err);
   }
@@ -178,16 +174,16 @@ const handleSubmit = async (e) => {
           >
             Login
           </button>
-
-          {/* Social Auth Buttons */}
-          <div className="space-y-3 pt-2">
-          
+           {/* Social Auth Buttons */}
+          <div className="space-y-3 pt-2">         
             <GoogleAuth/>
-            <LinkedInAuth/>
+            {/* <LinkedInAuth/>          */}
+            <FacebookAuth/>
+          </div>
 
           
-          </div>
         </form>
+       
 
         {/* Create account */}
         <div className="mt-6 flex justify-center space-x-2 text-sm text-neutral-700 dark:text-neutral-300">

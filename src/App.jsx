@@ -14,19 +14,20 @@ import Dashboard from "./pages/Dashboard";
 // import DashboardForm from "./components/DashboardForm";
 import Forget from "./pages/Forget";
 import Forgett from "./pages/Forgett";
+// import LinkedInAuth from "./components/LinkedInAuth";
+// import FacebookAuth from "./components/FacebookAuth";
 // import Loginn from "./pages/Loginn";
 
 function App() {
   return (
     <div className="h-full bg-slate-100 dark:bg-slate-900">
       <Router>
-       
         <Routes>
           <Route
             path="/"
             element={
               <>
-               <Navbar />
+                <Navbar />
                 <Hero />
                 <Logos />
                 <About />
@@ -39,9 +40,11 @@ function App() {
           <Route path="/login" element={<Login />} />
           {/* <Route path="/loginn" element={<Loginn />} /> */}
           <Route path="/signup" element={<Signup />} />
-          <Route path="/dashboard" element={<Dashboard/>}/>
-          <Route path="/forget" element={<Forget/>}/>
-          <Route path="/forgett" element={<Forgett/>}/>
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/forget" element={<Forget />} />
+          <Route path="/forgett" element={<Forgett />} />
+          {/* <Route path="/linkedin-auth" element={<LinkedInAuth />} /> */}
+          {/* <Route path="/facebook" element={<FacebookAuth />} /> */}
           {/* <Route path="/addUser" element={<DashboardForm/>}/> */}
         </Routes>
       </Router>
