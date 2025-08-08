@@ -2,6 +2,10 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import DashboardForm from "../components/DashboardForm";
+import UserOrder from "../components/UserOrder";
+import OrderList from "../components/OrderList";
+import ChangeOrderStatus from "../components/ChangeOrderStatus";
+// import OrderList from "../components/OrderList";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -12,6 +16,7 @@ export default function Dashboard() {
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isAddNewModelOpen, setIsAddNewModelOpen] = useState(false);
+  // const [isorderListOpen, setIsOrderListOpen] = useState(false);/
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -180,22 +185,22 @@ export default function Dashboard() {
             </div>
 
             <div className="bg-white dark:bg-gray-800 p-5 rounded-lg shadow-sm">
-              <h2 className="text-xl font-semibold text-gray-700 dark:text-white mb-2">
-                Quick Links
-              </h2>
-              <ul className="list-disc ml-5 text-gray-600 dark:text-gray-300 space-y-1">
-                <li>View AI Tools</li>
-                <li>Edit Profile</li>
-                <li>Logout</li>
-              </ul>
+             
+              <div className="list-disc ml-5 text-gray-600 dark:text-gray-300 space-y-1">
+                <UserOrder  />
+
+              </div>
             </div>
+            <OrderList/>
+            
           </div>
         ) : (
           <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md mt-6">
            <div className="flex items-center justify-between mb-6">
   <h2 className="text-2xl font-bold text-gray-800 dark:text-white">
-    All Users
+    All Users order
   </h2>
+  
   <button
     onClick={() => setIsAddNewModelOpen(true)}
     className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold px-5 py-2 rounded-full shadow-lg transition-all duration-200"
@@ -203,8 +208,13 @@ export default function Dashboard() {
     <span className="text-xl">＋</span> Add User
   </button>
 </div>
+<div>
+  <ChangeOrderStatus/>
+</div>
 
-            <div className="overflow-x-auto">
+
+=====================================================================================================================
+            {/* <div className="overflow-x-auto">
               <table className="min-w-full table-auto border border-gray-300 dark:border-gray-700">
                 <thead className="bg-gray-100 dark:bg-gray-700">
                   <tr>
@@ -259,7 +269,9 @@ export default function Dashboard() {
                   ))}
                 </tbody>
               </table>
-            </div>
+            </div> */}
+
+=====================================================================================================================            
           </div>
         )}
       </div>
@@ -378,11 +390,13 @@ export default function Dashboard() {
       ✕
     </button>
     <DashboardForm setShowAddUserForm={setIsAddNewModelOpen} />
+
   </div>
 </div>
 
   
 )}
+
 
     </div>
   );
