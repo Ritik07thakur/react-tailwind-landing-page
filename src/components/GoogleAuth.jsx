@@ -87,8 +87,6 @@ export default function GoogleAuth() {
     />
   </div>
 
-
-
   {successMessage && (
     <p className="text-green-600 font-medium text-sm text-center">
       {successMessage}
@@ -101,6 +99,5 @@ export default function GoogleAuth() {
     </p>
   )}
 </div>
-
   );
 }
