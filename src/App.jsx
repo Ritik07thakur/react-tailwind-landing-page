@@ -44,8 +44,8 @@ function App() {
           {/* <Route path="/loginn" element={<Loginn />} /> */}
           <Route path="/signup" element={<Signup />} />
           <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/dashboard/pendingOrder" element={<ChangeOrderStatus />} />
-          <Route path="/dashboard/Order" element={<OrderList />} />
+          {/* <Route path="/dashboard/pendingOrder" element={<ChangeOrderStatus />} /> */}
+          {/* <Route path="/dashboard/Order" element={<OrderList />} /> */}
           <Route path="/forget" element={<Forget />} />
           <Route path="/forgett" element={<Forgett />} />
           {/* <Route path="/linkedin-auth" element={<LinkedInAuth />} /> */}
