@@ -14,6 +14,7 @@ import Dashboard from "./pages/Dashboard";
 // import DashboardForm from "./components/DashboardForm";
 import Forget from "./pages/Forget";
 import QueueBoard from "./components/QueueBoard";
+// import QueueNotification from "./pages/QueueNotification";
 // import Forgett from "./pages/Forgett";
 // import PendingOrders from "./pages/PendingOrders";
 // import OrderList from "./components/OrderList";
@@ -49,6 +50,7 @@ function App() {
           {/* <Route path="/dashboard/Order" element={<OrderList />} /> */}
           <Route path="/forget" element={<Forget />} />
           <Route path="/queueBoard" element={<QueueBoard/>} />
+          {/* <Route path="/click" element={<QueueNotification/>} /> */}
           {/* <Route path="/forgett" element={<Forgett />} /> */}
           {/* <Route path="/linkedin-auth" element={<LinkedInAuth />} /> */}
           {/* <Route path="/facebook" element={<FacebookAuth />} /> */}

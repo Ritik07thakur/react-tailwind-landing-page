@@ -11,21 +11,23 @@ const socket = io(SOCKET_URL, { autoConnect: true });
 
 export default function QueueBoard() {
   const [dateTime, setDateTime] = useState("");
-  const [rows, setRows] = useState([]); // array of rows, each row = [cellA, cellB] where cell = { name, orderId } or null
-  const ordersRef = useRef([]); // keep current raw orders for easy updates
-  const MIN_ROWS = 4; // show at least 4 rows as placeholders (you can change)
+  const [rows, setRows] = useState([]);
+  const ordersRef = useRef([]);
+  const MIN_ROWS = 4;
 
-  // --- helper: format date/time ---
+  // SOUND ENABLED state (persist to localStorage)
+  const [soundEnabled, setSoundEnabled] = useState(() => {
+    try { return localStorage.getItem("queue_sound_enabled") === "1"; } catch { return false; }
+  });
+
+  // --- Date/time ---
   useEffect(() => {
     const updateDateTime = () => {
       const now = new Date();
       const formatted =
         now.toLocaleDateString("en-GB").replace(/\//g, ".") +
         " " +
-        now.toLocaleTimeString("en-GB", {
-          hour: "2-digit",
-          minute: "2-digit",
-        });
+        now.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
       setDateTime(formatted);
     };
     updateDateTime();
@@ -33,7 +35,7 @@ export default function QueueBoard() {
     return () => clearInterval(t);
   }, []);
 
-  // --- helper: chunk an array into rows of 2 items each ---
+  // --- Utilities: chunk orders into pairs (two-per-row) ---
   function chunkIntoPairs(arr) {
     const pairs = [];
     for (let i = 0; i < arr.length; i += 2) {
@@ -42,71 +44,115 @@ export default function QueueBoard() {
     return pairs;
   }
 
-  // --- convert full orders array to the `rows` structure we render ---
   function updateRowsFromOrders(rawOrders) {
-    // filter only pending orders (queue). Change this if you want a different filter.
     const pending = rawOrders.filter((o) => String(o.status).toLowerCase() === "pending");
-
-    // sort oldest -> newest (queue order)
     pending.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
-
-    // map to simple objects used in UI (name + orderId)
-    const mapped = pending.map((o) => ({
-      name: o.name ?? "",
-      orderId: o.orderId ?? "",
-      _id: o._id ?? null,
-    }));
-
+    const mapped = pending.map((o) => ({ name: o.name ?? "", orderId: o.orderId ?? "", _id: o._id ?? null }));
     const chunked = chunkIntoPairs(mapped);
-
-    // ensure at least MIN_ROWS rows for visual parity with screenshot
     const fillCount = Math.max(0, MIN_ROWS - chunked.length);
     for (let i = 0; i < fillCount; i++) chunked.push([null, null]);
-
     setRows(chunked);
-    ordersRef.current = pending; // keep reference to raw pending orders
+    ordersRef.current = pending;
   }
 
-  // --- fetch initial data ---
+  // --- Fetch initial orders ---
   async function fetchOrders() {
     try {
       const res = await axios.get(API_URL);
-      // detect common shapes: array, { data: [...] }, { orders: [...] }
       let dataArr = [];
       if (Array.isArray(res.data)) dataArr = res.data;
       else if (Array.isArray(res.data.data)) dataArr = res.data.data;
       else if (Array.isArray(res.data.orders)) dataArr = res.data.orders;
       else dataArr = [];
-
       updateRowsFromOrders(dataArr);
     } catch (err) {
       console.error("Failed to fetch orders:", err);
-      // keep rows as placeholders
       updateRowsFromOrders([]);
     }
   }
 
-  // --- socket listeners for realtime updates ---
+  // --- Audio helpers ---
+  // play an audio file and wait until it ends (resolves), or reject if can't play
+  function playAudioAndWait(src) {
+    return new Promise((resolve, reject) => {
+      try {
+        const audio = new Audio(src);
+        // ensure cleanup handlers
+        const cleanup = () => {
+          audio.onended = null;
+          audio.onerror = null;
+        };
+        audio.onended = () => { cleanup(); resolve(); };
+        audio.onerror = (e) => { cleanup(); reject(e); };
+        const p = audio.play();
+        // if browser returns a promise, handle rejection
+        if (p && typeof p.then === "function") {
+          p.catch((err) => {
+            // reject if playback not allowed
+            cleanup();
+            reject(err);
+          });
+        }
+      } catch (err) {
+        reject(err);
+      }
+    });
+  }
+
+  // speak message via SpeechSynthesis
+  function speakQueueNumber(orderId) {
+    try {
+      const text = `Your queue number ${orderId} will be called soon`;
+      const u = new SpeechSynthesisUtterance(text);
+      // optional: pick preferred voice (english)
+      const voices = window.speechSynthesis.getVoices();
+      // pick first en voice if found
+      const v = voices.find((vv) => vv.lang && vv.lang.startsWith("en")) || voices[0];
+      if (v) u.voice = v;
+      u.rate = 1;
+      u.pitch = 1;
+      // cancel any existing spoken text to avoid overlap
+      window.speechSynthesis.cancel();
+      window.speechSynthesis.speak(u);
+    } catch (err) {
+      console.error("Speech failed:", err);
+    }
+  }
+
+  // Play ding then speak (safe fallback: if ding fails try speaking anyway)
+  async function playDingThenSpeak(orderId) {
+    if (!soundEnabled) return;
+    try {
+      await playAudioAndWait("/dingdong.mp3");
+      // small delay (optional)
+      setTimeout(() => speakQueueNumber(orderId), 200);
+    } catch (err) {
+      console.warn("Ding playback failed, fallback to speak only:", err);
+      speakQueueNumber(orderId);
+    }
+  }
+
+  // --- Socket listeners ---
   useEffect(() => {
     fetchOrders();
 
-    // newOrder: backend may emit a single order object or an array
     function onNewOrder(payload) {
       if (!payload) return;
+      // if array -> full list
       if (Array.isArray(payload)) {
-        // backend sent full list
         updateRowsFromOrders(payload);
         return;
       }
       const order = payload;
-      // if it's completed already ignore, otherwise append to the end of the queue
+      // treat only pending as queue additions
       if (String(order.status).toLowerCase() !== "complete") {
         ordersRef.current = [...ordersRef.current, order];
         updateRowsFromOrders(ordersRef.current);
+        // play sound + speak
+        playDingThenSpeak(order.orderId);
       }
     }
 
-    // orderUpdated: update single order or full list
     function onOrderUpdated(payload) {
       if (!payload) return;
       if (Array.isArray(payload)) {
@@ -115,27 +161,23 @@ export default function QueueBoard() {
       }
       const updated = payload;
       const id = updated._id;
-      if (!id) {
-        // fallback: refresh full list
-        fetchOrders();
-        return;
-      }
-
-      // if order marked complete -> remove from queue
+      if (!id) { fetchOrders(); return; }
+      // if completed remove
       if (String(updated.status).toLowerCase() === "complete") {
         ordersRef.current = ordersRef.current.filter((o) => o._id !== id);
         updateRowsFromOrders(ordersRef.current);
       } else {
-        // replace or add
+        // replace or add and optionally play sound if it's a newly added pending item
         let found = false;
         ordersRef.current = ordersRef.current.map((o) => {
-          if (o._id === id) {
-            found = true;
-            return updated;
-          }
+          if (o._id === id) { found = true; return updated; }
           return o;
         });
-        if (!found) ordersRef.current.push(updated);
+        if (!found) {
+          ordersRef.current.push(updated);
+          // play sound for newly added via update (if appropriate)
+          playDingThenSpeak(updated.orderId);
+        }
         updateRowsFromOrders(ordersRef.current);
       }
     }
@@ -148,86 +190,57 @@ export default function QueueBoard() {
       socket.off("orderUpdated", onOrderUpdated);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [soundEnabled]);
 
-  // --- rendering ---
+  // --- UI: enable sound handler ---
+  function enableSound() {
+    try {
+      // try to make a short sound to prime audio permission
+      const a = new Audio("/dingdong.mp3");
+      a.play().catch(() => { /* may still fail; user gesture required */ });
+    } catch (err) {
+      // ignore
+    }
+    setSoundEnabled(true);
+    try { localStorage.setItem("queue_sound_enabled", "1"); } catch {}
+  }
+
+  // Render
   return (
     <div style={{ fontFamily: "'Times New Roman', serif", backgroundColor: "#fff" }}>
       {/* Header */}
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          padding: "10px 20px",
-          borderBottom: "1px solid black",
-          backgroundColor: "#fff",
-        }}
-      >
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 20px", borderBottom: "1px solid black", backgroundColor: "#fff" }}>
         <img src={LOGO_URL} alt="Logo" style={{ height: "50px" }} />
-
         <div style={{ textAlign: "center" }}>
           <div style={{ fontWeight: "bold", fontSize: "24px" }}>Default (Only Queue)</div>
           <div style={{ fontWeight: "bold", fontSize: "24px" }}>Premium</div>
         </div>
-
         <div style={{ fontSize: "18px" }}>{dateTime}</div>
       </div>
 
+      {/* If sound not enabled show a small floating button/overlay to enable it */}
+      {!soundEnabled && (
+        <div style={{ position: "fixed", right: 20, bottom: 20, zIndex: 9999 }}>
+          <button onClick={enableSound} style={{ padding: "10px 14px", borderRadius: 6, border: "1px solid #333", background: "#111", color: "#fff", cursor: "pointer" }}>
+            Enable Sound
+          </button>
+        </div>
+      )}
+
       {/* Table */}
-      <table
-        style={{
-          width: "100%",
-          borderCollapse: "collapse",
-          tableLayout: "fixed",
-          backgroundColor: "#fff",
-        }}
-      >
+      <table style={{ width: "100%", borderCollapse: "collapse", tableLayout: "fixed", backgroundColor: "#fff" }}>
         <tbody>
           {rows.map((row, rowIndex) => {
             const isBottomRow = rowIndex === rows.length - 1;
             return (
-              <tr
-                key={rowIndex}
-                style={{
-                  backgroundColor: isBottomRow ? "#e9f0f8" : "#fff",
-                }}
-              >
+              <tr key={rowIndex} style={{ backgroundColor: isBottomRow ? "#e9f0f8" : "#fff" }}>
                 {row.map((cell, colIndex) => (
-                  <td
-                    key={colIndex}
-                    style={{
-                      border: "1px solid black",
-                      height: "120px",
-                      verticalAlign: "middle",
-                      textAlign: "left",
-                      position: "relative",
-                      padding: "10px 20px",
-                      backgroundColor: isBottomRow ? "#e9f0f8" : "#fff",
-                    }}
-                  >
-                    {/* Name (left) and OrderID (right) on the same line */}
+                  <td key={colIndex} style={{ border: "1px solid black", height: "120px", verticalAlign: "middle", textAlign: "left", position: "relative", padding: "10px 20px", backgroundColor: isBottomRow ? "#e9f0f8" : "#fff" }}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: 20, fontWeight: 600 }}>
-                      <div style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                        {cell ? cell.name : ""}
-                      </div>
-                      <div style={{ marginLeft: 12 }}> {cell ? `#${cell.orderId}` : ""} </div>
+                      <div style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{cell ? cell.name : ""}</div>
+                      <div style={{ marginLeft: 12 }}>{cell ? `#${cell.orderId}` : ""}</div>
                     </div>
-
-                    {/* small description line (optional) */}
-                    {/* <div style={{ fontSize: 12, color: "#666", marginTop: 6 }}>{cell ? cell.email : ""}</div> */}
-
-                    {/* Brown bar (right half style like screenshot) */}
-                    <div
-                      style={{
-                        position: "absolute",
-                        bottom: 0,
-                        right: 0,
-                        height: 6,
-                        backgroundColor: "#8b5e3c",
-                        width: "35%",
-                      }}
-                    />
+                    <div style={{ position: "absolute", bottom: 0, right: 0, height: 6, backgroundColor: "#8b5e3c", width: "35%" }} />
                   </td>
                 ))}
               </tr>
