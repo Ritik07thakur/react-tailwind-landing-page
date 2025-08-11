@@ -1,4 +1,7 @@
 import React, { useEffect, useState } from "react";
+import { io } from "socket.io-client";
+
+const socket = io("http://localhost:5000"); // change URL if needed
 
 export default function ChangeOrderStatus() {
   const [orders, setOrders] = useState([]);
@@ -11,8 +14,10 @@ export default function ChangeOrderStatus() {
       const res = await fetch("http://localhost:5000/api/user/showOrder");
       const data = await res.json();
       if (data.success) {
-        setOrders(data.data);
-        setFilteredOrders(data.data);
+        // only store pending orders in state
+        const pendingOrders = data.data.filter(order => order.status === "pending");
+        setOrders(pendingOrders);
+        setFilteredOrders(pendingOrders);
       }
     } catch (error) {
       console.error("Error fetching orders:", error);
@@ -32,7 +37,7 @@ export default function ChangeOrderStatus() {
       const data = await res.json();
 
       if (data.status === "success") {
-        // Remove the order from the state immediately
+        // Remove from list immediately (optimistic UI update)
         setOrders((prev) => prev.filter((order) => order._id !== id));
         setFilteredOrders((prev) => prev.filter((order) => order._id !== id));
       }
@@ -44,16 +49,33 @@ export default function ChangeOrderStatus() {
   useEffect(() => {
     fetchOrders();
 
-    // Set up polling every 5 seconds
-    const interval = setInterval(() => {
-      fetchOrders();
-    }, 5000);
+    // Listen for new order events
+    socket.on("newOrder", (newOrder) => {
+      if (newOrder.status === "pending") {
+        setOrders((prev) => [newOrder, ...prev]);
+      }
+    });
 
-    // Clear interval on component unmount
-    return () => clearInterval(interval);
+    // Listen for order updated events (remove completed orders)
+    socket.on("orderUpdated", (updatedOrder) => {
+      if (updatedOrder.status === "complete") {
+        setOrders((prev) => prev.filter((order) => order._id !== updatedOrder._id));
+      } else {
+        setOrders((prev) =>
+          prev.map((order) =>
+            order._id === updatedOrder._id ? updatedOrder : order
+          )
+        );
+      }
+    });
+
+    return () => {
+      socket.off("newOrder");
+      socket.off("orderUpdated");
+    };
   }, []);
 
-  // Update filteredOrders when searchQuery or orders change
+  // Filter orders when search query or orders change
   useEffect(() => {
     if (!searchQuery) {
       setFilteredOrders(orders);
@@ -107,25 +129,17 @@ export default function ChangeOrderStatus() {
                   <td className="py-3 px-6">{order.email}</td>
                   <td className="py-3 px-6">{order.food}</td>
                   <td className="py-3 px-6">
-                    <span
-                      className={`px-3 py-1 rounded-full text-sm font-semibold ${
-                        order.status === "pending"
-                          ? "bg-yellow-500 text-black"
-                          : "bg-green-500 text-white"
-                      }`}
-                    >
-                      {order.status}
+                    <span className="bg-yellow-500 text-black px-3 py-1 rounded-full text-sm font-semibold">
+                      Pending
                     </span>
                   </td>
                   <td className="py-3 px-6 text-center">
-                    {order.status !== "complete" && (
-                      <button
-                        onClick={() => handleStatusChange(order._id)}
-                        className="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition duration-300 ease-in-out"
-                      >
-                        Complete Order
-                      </button>
-                    )}
+                    <button
+                      onClick={() => handleStatusChange(order._id)}
+                      className="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition duration-300 ease-in-out"
+                    >
+                      Complete Now
+                    </button>
                   </td>
                 </tr>
               ))

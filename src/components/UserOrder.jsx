@@ -70,7 +70,7 @@ export default function UserOrder({ onOrderPlaced }) {
       setTimeout(() => {
         setShowForm(false);
         setSuccess("");
-      }, 1000);
+      }, 100);
     } catch (error) {
       console.error("Order submission error:", error);
       setSuccess("");

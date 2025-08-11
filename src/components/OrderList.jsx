@@ -1,4 +1,7 @@
 import React, { useEffect, useState } from "react";
+import { io } from "socket.io-client";
+
+const socket = io("http://localhost:5000"); // Update URL if needed
 
 export default function OrderList() {
   const [orders, setOrders] = useState([]);
@@ -10,7 +13,11 @@ export default function OrderList() {
       const res = await fetch("http://localhost:5000/api/user/showOrder");
       const data = await res.json();
       if (data.success) {
-        setOrders(data.data);
+        // Filter out completed orders and sort by orderId ascending
+        const filteredSorted = data.data
+          .filter(order => order.status !== "complete")
+          .sort((a, b) => Number(a.orderId) - Number(b.orderId));
+        setOrders(filteredSorted);
       }
     } catch (error) {
       console.error("Error fetching orders:", error);
@@ -19,33 +26,36 @@ export default function OrderList() {
     }
   };
 
-  // Update order status
-  const updateStatus = async (orderId) => {
-    try {
-      await fetch(`http://localhost:5000/api/user/order/${orderId}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ status: "completed" }),
-      });
-      // Refresh orders after update
-      fetchOrders();
-    } catch (error) {
-      console.error("Error updating order:", error);
-    }
-  };
-
   useEffect(() => {
     fetchOrders();
 
-    // Polling every 5 seconds
-    const interval = setInterval(() => {
-      fetchOrders();
-    }, 5000);
+    // Listen for new orders and updates in real-time
+    socket.on("newOrder", (newOrder) => {
+      if (newOrder.status !== "complete") {
+        setOrders((prev) => {
+          // Add new order, filter completed, and sort ascending by orderId
+          const updated = [...prev, newOrder].filter(order => order.status !== "complete");
+          return updated.sort((a, b) => Number(a.orderId) - Number(b.orderId));
+        });
+      }
+    });
 
-    // Cleanup on unmount
-    return () => clearInterval(interval);
+    socket.on("orderUpdated", (updatedOrder) => {
+      setOrders((prev) => {
+        // Replace updated order if not complete, else remove it
+        let updated = prev.filter(order => order._id !== updatedOrder._id);
+        if (updatedOrder.status !== "complete") {
+          updated.push(updatedOrder);
+        }
+        return updated.sort((a, b) => Number(a.orderId) - Number(b.orderId));
+      });
+    });
+
+    // Cleanup listeners on unmount
+    return () => {
+      socket.off("newOrder");
+      socket.off("orderUpdated");
+    };
   }, []);
 
   if (loading) {
@@ -80,7 +90,7 @@ export default function OrderList() {
             {orders.length > 0 ? (
               orders.map((order) => (
                 <tr
-                  key={order.orderId}
+                  key={order._id}
                   className="hover:bg-gray-800 transition duration-200 text-sm"
                 >
                   <td className="py-3 px-4 border-b border-gray-700 text-center text-gray-300">

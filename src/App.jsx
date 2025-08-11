@@ -13,10 +13,11 @@ import Signup from "./pages/Signup";
 import Dashboard from "./pages/Dashboard";
 // import DashboardForm from "./components/DashboardForm";
 import Forget from "./pages/Forget";
-import Forgett from "./pages/Forgett";
+import QueueBoard from "./components/QueueBoard";
+// import Forgett from "./pages/Forgett";
 // import PendingOrders from "./pages/PendingOrders";
-import OrderList from "./components/OrderList";
-import ChangeOrderStatus from "./components/ChangeOrderStatus";
+// import OrderList from "./components/OrderList";
+// import ChangeOrderStatus from "./components/ChangeOrderStatus";
 // import LinkedInAuth from "./components/LinkedInAuth";
 // import FacebookAuth from "./components/FacebookAuth";
 // import Loginn from "./pages/Loginn";
@@ -47,10 +48,12 @@ function App() {
           {/* <Route path="/dashboard/pendingOrder" element={<ChangeOrderStatus />} /> */}
           {/* <Route path="/dashboard/Order" element={<OrderList />} /> */}
           <Route path="/forget" element={<Forget />} />
-          <Route path="/forgett" element={<Forgett />} />
+          <Route path="/queueBoard" element={<QueueBoard/>} />
+          {/* <Route path="/forgett" element={<Forgett />} /> */}
           {/* <Route path="/linkedin-auth" element={<LinkedInAuth />} /> */}
           {/* <Route path="/facebook" element={<FacebookAuth />} /> */}
           {/* <Route path="/addUser" element={<DashboardForm/>}/> */}
+          
         </Routes>
       </Router>
     </div>
